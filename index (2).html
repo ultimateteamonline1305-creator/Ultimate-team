@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ultimate Universe: MASTER LIVE V4 AUTH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDvwKe3zuT75m5BtXAMm3Z2sN_6Erl9VlE",
+            authDomain: "ultimate-team-online.firebaseapp.com",
+            projectId: "ultimate-team-online",
+            storageBucket: "ultimate-team-online.firebasestorage.app",
+            messagingSenderId: "121427180098",
+            appId: "1:121427180098:web:088d523d35c1fccc350bdb",
+            measurementId: "G-XYMCRH1JZ3"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const usersCollection = db.collection('users');
+
+        console.log("Firebase inicializado.");
+    </script>
+    <style>
+        /* --- CSS STYLES (MAINTAINED FROM V4) --- */
+        :root {
+            --bg-main: #080808; --bg-card: #121212; --bg-accent: #1e1e1e;
+            --primary: #00ff88; --gold: #d4af37; --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            --wc-blue: #004d99; --text-main: #ffffff; --text-dim: #888888;
+            --danger: #ff4444; --radius-lg: 20px; --radius-md: 12px; --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+        
+        /* AUTH SCREEN */
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-main); z-index: 4000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; overflow-y: auto; }
+        .auth-card { background: var(--bg-card); padding: 30px; border-radius: var(--radius-lg); border: 1px solid var(--bg-accent); width: 100%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); flex-shrink: 0; }
+        .auth-input { width: 100%; padding: 15px; margin-bottom: 15px; background: var(--bg-accent); border: 1px solid #333; color: #fff; border-radius: var(--radius-md); font-size: 0.9rem; outline: none; }
+        .auth-input:focus { border-color: var(--primary); }
+
+        /* HEADER & UI (FROM V4) */
+        header { position: sticky; top: 0; padding: 15px 20px; background: rgba(8, 8, 8, 0.9); backdrop-filter: blur(20px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--bg-accent); z-index: 1000; }
+        .currency-box { display: flex; gap: 8px; }
+        .currency-pill { background: var(--bg-card); padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 0.7rem; border: 1px solid var(--bg-accent); display: flex; align-items: center; gap: 6px; }
+        main { flex: 1; padding: 20px; padding-bottom: 120px; position: relative; overflow-y: visible; -webkit-overflow-scrolling: touch; }
+        .screen { display: none; animation: slideIn 0.3s ease-out; }
+        .screen.active { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .h1 { font-family: 'Montserrat'; font-size: 1.4rem; font-weight: 900; text-transform: uppercase; margin-bottom: 4px; }
+        .subtitle { color: var(--text-dim); font-size: 0.75rem; margin-bottom: 20px; }
+        .btn { padding: 14px; border-radius: var(--radius-md); border: none; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: var(--transition); font-size: 0.7rem; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; position: relative; overflow: hidden; }
+        .btn-primary { background: var(--primary); color: #000; }
+        .btn-gold { background: var(--gold-gradient); color: #000; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-outline { background: transparent; border: 2px solid var(--bg-accent); color: var(--text-main); }
+        .btn:active { transform: scale(0.95); }
+        .card-ui { background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--bg-accent); padding: 18px; margin-bottom: 12px; transition: var(--transition); }
+        .card-player { width: 100px; height: 140px; border-radius: 10px; background: var(--bg-card); border: 2px solid var(--bg-accent); position: relative; display: flex; flex-direction: column; align-items: center; padding: 8px; transition: var(--transition); flex-shrink: 0; cursor: pointer; }
+        .card-rating { font-family: 'Montserrat'; font-size: 1.2rem; font-weight: 900; position: absolute; top: 8px; left: 8px; }
+        .card-pos { position: absolute; top: 28px; left: 8px; font-size: 0.6rem; font-weight: 800; color: var(--text-dim); }
+        .card-img { width: 60px; height: 60px; margin-top: 15px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .card-name { margin-top: 8px; font-weight: 700; font-size: 0.6rem; text-transform: uppercase; text-align: center; }
+        .card-raro { border-color: #555; }
+        .card-super_raro { border-color: var(--gold); background: linear-gradient(135deg, #1a1a1a, #2a2200); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+        .card-icon { border-color: #fff; background: linear-gradient(135deg, #1a1a1a, #333); box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
+        .field { position: relative; width: 100%; aspect-ratio: 2/3; background: #1b3d2f; border-radius: 20px; background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 100% 10%; border: 2px solid rgba(255,255,255,0.1); }
+        .formation-grid { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: grid; grid-template-rows: repeat(4, 1fr); padding: 10px; }
+        .row { display: flex; justify-content: space-around; align-items: center; }
+        .slot { width: 50px; height: 70px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 8px; background: rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
+        .slot.filled { border: none; background: transparent; }
+        .slot span { font-size: 0.45rem; font-weight: 800; color: rgba(255,255,255,0.5); }
+        nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(8, 8, 8, 0.95); backdrop-filter: blur(30px); border-top: 1px solid var(--bg-accent); z-index: 1000; }
+        .nav-scroll { display: flex; overflow-x: auto; padding: 10px 5px 20px; gap: 5px; scrollbar-width: none; }
+        .nav-item { flex: 0 0 75px; display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-dim); cursor: pointer; transition: var(--transition); }
+        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
+        .nav-item i { font-size: 1.2rem; }
+        .nav-item span { font-size: 0.5rem; font-weight: 800; text-transform: uppercase; }
+        .wc-header { background: linear-gradient(135deg, var(--wc-blue), #001a33); border-radius: var(--radius-lg); padding: 25px; margin-bottom: 20px; text-align: center; border: 2px solid rgba(255,255,255,0.1); }
+        .wc-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.7rem; }
+        .wc-table th { text-align: left; color: var(--text-dim); padding: 8px; border-bottom: 1px solid var(--bg-accent); }
+        .wc-table td { padding: 10px 8px; border-bottom: 1px solid var(--bg-accent); }
+        .wc-table tr.highlight { background: rgba(0,255,136,0.05); color: var(--primary); font-weight: 800; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+        .modal { position: fixed; bottom: -100%; left: 0; width: 100%; height: 85%; background: var(--bg-main); z-index: 1500; border-radius: 30px 30px 0 0; border-top: 2px solid var(--bg-accent); padding: 25px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
+        .modal.active { bottom: 0; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1400; display: none; backdrop-filter: blur(5px); }
+        .toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #000; padding: 10px 25px; border-radius: 30px; font-weight: 900; font-size: 0.75rem; z-index: 5000; display: none; box-shadow: 0 10px 30px rgba(0,255,136,0.3); }
+        .flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; opacity: 0; z-index: 2100; pointer-events: none; }
+        .flash.active { animation: flashAnim 0.8s ease-out; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes packShake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(3deg); } 75% { transform: rotate(-3deg); } }
+        @keyframes flashAnim { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div id="toast" class="toast">MENSAGEM</div>
+    <div id="modal-overlay" class="modal-overlay" onclick="closeAllModals()"></div>
+    <div class="flash" id="global-flash"></div>
+
+    <!-- AUTH SCREEN -->
+    <section id="auth-screen">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="font-family: 'Montserrat'; font-weight: 900; font-size: 2.2rem; color: var(--primary); letter-spacing: -1px;">ULTIMATE</h1>
+            <p style="color: var(--text-dim); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Acesso Master V4</p>
+        </div>
+        
+        <div class="auth-card" id="login-form">
+            <button class="btn" style="background: #fff; color: #000; margin-bottom: 20px;" onclick="signInWithGoogle()"><i data-lucide="chrome"></i> GOOGLE LOGIN</button>
+            <div style="text-align: center; color: var(--text-dim); font-size: 0.65rem; margin-bottom: 20px; font-weight: 800;">OU ENTRE COM E-MAIL</div>
+            <input type="email" id="login-email" class="auth-input" placeholder="Seu E-mail">
+            <input type="password" id="login-pass" class="auth-input" placeholder="Sua Senha">
+            <button class="btn btn-primary" onclick="handleLogin()">ENTRAR NO JOGO</button>
+            <p style="text-align: center; font-size: 0.7rem; margin-top: 25px; color: var(--text-dim);">Novo no Ultimate? <span style="color: var(--primary); font-weight: 800; cursor: pointer;" onclick="toggleAuth()">CRIAR CONTA</span></p>
+        </div>
+
+        <div class="auth-card" id="register-form" style="display: none;">
+            <h2 style="font-family: 'Montserrat'; font-size: 1rem; margin-bottom: 20px; font-weight: 900;">NOVO CADASTRO</h2>
+            <input type="text" id="reg-user" class="auth-input" placeholder="Nome de Usuário">
+            <input type="email" id="reg-email" class="auth-input" placeholder="E-mail Válido">
+            <input type="password" id="reg-pass" class="auth-input" placeholder="Senha Forte">
+            <button class="btn btn-primary" onclick="handleRegister()">CRIAR E JOGAR</button>
+            <p style="text-align: center; font-size: 0.7rem; margin-top: 25px; color: var(--text-dim);">Já possui conta? <span style="color: var(--primary); font-weight: 800; cursor: pointer;" onclick="toggleAuth()">FAZER LOGIN</span></p>
+        </div>
+    </section>
+
+    <!-- MAIN GAME (HIDDEN UNTIL AUTH) -->
+    <div id="game-ui" style="display: none;">
+        <header>
+            <div style="font-family: 'Montserrat'; font-weight: 900; font-size: 0.9rem;">ULTIMATE MASTER V4</div>
+            <div class="currency-box">
+                <div class="currency-pill"><i data-lucide="coins"></i> <span id="coins-val">10.000</span></div>
+                <div class="currency-pill"><i data-lucide="gem" style="color: #00f2ff;"></i> <span id="gems-val">0</span></div>
+            </div>
+        </header>
+
+        <main id="main-content">
+            <!-- LOJA -->
+            <section id="store-screen" class="screen active">
+                <h1 class="h1">LOJA</h1><p class="subtitle">Packs e Ligas</p>
+                <div class="card-ui" style="background: var(--gold-gradient); color: #000;">
+                    <h2 style="font-family: 'Montserrat'; font-weight: 900; font-size: 1rem; margin-bottom: 5px;">LEGENDS PACK</h2>
+                    <button class="btn" style="background: #000; color: #fff;" onclick="buyPack('LEGENDS', 5000)">ABRIR (5.000)</button>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top:10px;">
+                    <div class="card-ui" style="border-left: 4px solid #f00;"><h3 style="font-size: 0.8rem; margin-bottom: 10px;">SPA LEAGUE</h3><button class="btn btn-primary" onclick="buyPack('SPA', 3000)">3.000</button></div>
+                    <div class="card-ui" style="border-left: 4px solid #00f;"><h3 style="font-size: 0.8rem; margin-bottom: 10px;">ENG LEAGUE</h3><button class="btn btn-primary" onclick="buyPack('ENG', 3000)">3.000</button></div>
+                </div>
+                <div class="card-ui" style="border-left: 4px solid #0f0; margin-top: 10px;"><div style="display: flex; justify-content: space-between; align-items: center;"><h3 style="font-size: 0.8rem;">BRA LEAGUE</h3><button class="btn btn-primary" style="width: 100px;" onclick="buyPack('BRA', 2500)">2.500</button></div></div>
+            </section>
+
+            <!-- CLUBE -->
+            <section id="club-screen" class="screen">
+                <h1 class="h1">MEU CLUBE</h1>
+                <p class="subtitle" id="club-count">Você possui 0 jogadores</p>
+                <div id="club-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; justify-items: center; padding-bottom: 80px;"></div>
+            </section>
+
+            <!-- TIME -->
+            <section id="team-screen" class="screen">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><h1 class="h1">MEU TIME</h1><div style="background: var(--bg-card); padding: 5px 15px; border-radius: 20px; border: 1px solid var(--primary);"><span id="team-ovr-val" style="font-family: 'Montserrat'; font-weight: 900; color: var(--primary);">75</span></div></div>
+                <div class="field"><div class="formation-grid">
+                    <div class="row"><div class="slot" data-pos="ATA" onclick="openSelector(0)"><span>ATA</span></div><div class="slot" data-pos="ATA" onclick="openSelector(1)"><span>ATA</span></div><div class="slot" data-pos="ATA" onclick="openSelector(2)"><span>ATA</span></div></div>
+                    <div class="row"><div class="slot" data-pos="MEI" onclick="openSelector(3)"><span>MEI</span></div><div class="slot" data-pos="MEI" onclick="openSelector(4)"><span>MEI</span></div><div class="slot" data-pos="MEI" onclick="openSelector(5)"><span>MEI</span></div></div>
+                    <div class="row"><div class="slot" data-pos="DEF" onclick="openSelector(6)"><span>DEF</span></div><div class="slot" data-pos="DEF" onclick="openSelector(7)"><span>DEF</span></div><div class="slot" data-pos="DEF" onclick="openSelector(8)"><span>DEF</span></div><div class="slot" data-pos="DEF" onclick="openSelector(9)"><span>DEF</span></div></div>
+                    <div class="row"><div class="slot" data-pos="GOL" onclick="openSelector(10)"><span>GOL</span></div></div>
+                </div></div>
+            </section>
+
+            <!-- JOGAR -->
+            <section id="play-screen" class="screen"><h1 class="h1">JOGAR</h1><div class="card-ui" style="text-align: center;"><h2 style="font-family: 'Montserrat'; font-size: 0.8rem; margin-bottom: 15px;">DIFICULDADE RIVAL</h2><div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px;"><button class="btn btn-outline diff-btn active" onclick="setRival(80, this)">80</button><button class="btn btn-outline diff-btn" onclick="setRival(90, this)">90</button><button class="btn btn-outline diff-btn" onclick="setRival(100, this)">100</button></div><button class="btn btn-primary" onclick="startMatch()">INICIAR PARTIDA</button></div></section>
+
+            <!-- COPA -->
+            <section id="wc-screen" class="screen">
+                <div id="wc-intro"><div class="wc-header"><h1 class="h1">WORLD CUP</h1><p>TORNEIO DE SELEÇÕES</p></div><div id="teams-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"></div><button id="start-wc-btn" class="btn btn-primary" style="margin-top: 25px; display: none;" onclick="confirmSelection()">INICIAR COPA</button></div>
+                <div id="wc-hub" style="display: none;"><div class="wc-header" style="display: flex; justify-content: space-between; align-items: center;"><div id="my-team-display"></div><div id="current-phase-label">GRUPO</div></div><div class="card-ui"><table class="wc-table"><thead><tr><th>TIME</th><th>P</th></tr></thead><tbody id="group-table-body"></tbody></table></div><button class="btn btn-primary" style="margin-top: 15px;" onclick="playWCGame()">JOGAR PARTIDA</button><button class="btn btn-outline" style="margin-top: 10px;" onclick="resetWC()">ABANDONAR</button></div>
+            </section>
+
+            <!-- MERCADO -->
+            <section id="market-screen" class="screen"><h1 class="h1">MERCADO</h1><p class="subtitle">Ofertas Dinâmicas por Tempo Limitado</p><div id="market-list"></div></section>
+            
+            <!-- SINCRONIZAR -->
+            <section id="sync-screen" class="screen"><h1 class="h1">SINCRONIZAR</h1><p class="subtitle">Atualize Mercado e Jogadores</p><div class="card-ui"><textarea id="sync-code-input" style="width: 100%; height: 120px; background: var(--bg-accent); border: 1px solid #333; color: #fff; padding: 10px; border-radius: 8px; font-size: 0.6rem; margin-bottom: 15px;" placeholder="Cole o código de sincronização aqui..."></textarea><button class="btn btn-primary" onclick="syncData()">SINCRONIZAR AGORA</button></div></section>
+            
+            <section id="ranking-screen" class="screen"><h1 class="h1">RANKING</h1><div class="card-ui">Ranking Global em breve...</div></section>
+            <section id="profile-screen" class="screen">
+                <h1 class="h1">PERFIL</h1>
+                <div class="card-ui" style="text-align:center;">
+                    <h2 id="prof-user" style="font-family: 'Montserrat';">USUÁRIO</h2>
+                    <p id="prof-email" style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 20px;">email@exemplo.com</p>
+                    <button class="btn btn-danger" onclick="handleLogout()">SAIR DA CONTA</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- MODALS -->
+        <div id="player-details-modal" class="modal">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px;"><div id="modal-card-container"></div><div style="flex: 1; margin-left: 20px;"><h2 id="modal-player-name" style="font-family: 'Montserrat'; font-size: 1.1rem; margin-bottom: 5px;">JOGADOR</h2><p id="modal-player-pos" style="font-size: 0.7rem; font-weight: 800; color: var(--primary); text-transform: uppercase;">ATACANTE</p><p id="modal-player-liga" style="font-size: 0.65rem; color: var(--text-dim);">LIGA</p><p id="modal-player-val" style="font-size: 0.8rem; font-weight: 800; color: var(--gold); margin-top: 10px;">VALOR: 5.000</p><div id="modal-stats-container" style="margin-top: 15px;"></div><button class="btn btn-danger" id="modal-sell-btn" style="margin-top: 20px; display: none;">VENDER (50%)</button></div></div>
+        </div>
+        <div id="selector-modal" class="modal"><h2 style="font-family: 'Montserrat'; font-size: 1rem; margin-bottom: 20px;">ESCOLHER JOGADOR</h2><div id="selector-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; justify-items: center;"></div></div>
+        <div id="pack-reveal-overlay" class="overlay"><div id="pack-visual-container"><div style="width: 150px; height: 200px; background: var(--gold-gradient); border-radius: 15px; display: flex; align-items: center; justify-content: center; animation: packShake 0.5s infinite;"><i data-lucide="package-open" size="60" color="#000"></i></div></div><div id="revealed-player-container" style="display: none; transform: scale(0); transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);"></div><div id="dupe-msg" style="display: none; color: var(--gold); font-weight: 800; margin-top: 15px;">REPETIDO!</div><button class="btn btn-primary" id="collect-btn" style="display: none; width: auto; padding: 12px 40px; margin-top: 40px;" onclick="closePackReveal()">CONTINUAR</button></div>
+        <div id="match-overlay" class="overlay"><div style="width: 60px; height: 60px; border: 4px solid var(--primary); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;"></div><h2 style="font-family: 'Montserrat';">SIMULANDO...</h2><div id="match-result-ui" style="display: none; margin-top: 30px;"><h1 id="res-status" style="font-family: 'Montserrat'; font-size: 2.5rem;">VITÓRIA!</h1><div id="res-score" style="font-family: 'Montserrat'; font-size: 4rem; color: var(--primary);">2 - 1</div><div id="res-rewards" style="margin-top: 20px; display: flex; justify-content: center; gap: 15px;"></div><button class="btn btn-primary" style="margin-top: 40px; width: auto; padding: 12px 50px;" onclick="closeMatchOverlay()">CONTINUAR</button></div></div>
+
+        <nav><div class="nav-scroll">
+            <div class="nav-item active" onclick="switchTab('store-screen', this)"><i data-lucide="shopping-bag"></i><span>Loja</span></div>
+            <div class="nav-item" onclick="switchTab('club-screen', this)"><i data-lucide="layers"></i><span>Clube</span></div>
+            <div class="nav-item" onclick="switchTab('team-screen', this)"><i data-lucide="users"></i><span>Time</span></div>
+            <div class="nav-item" onclick="switchTab('play-screen', this)"><i data-lucide="play-circle"></i><span>Jogar</span></div>
+            <div class="nav-item" onclick="switchTab('wc-screen', this)"><i data-lucide="trophy"></i><span>Copa</span></div>
+            <div class="nav-item" onclick="switchTab('market-screen', this)"><i data-lucide="shopping-cart"></i><span>Mercado</span></div>
+            <div class="nav-item" onclick="switchTab('sync-screen', this)"><i data-lucide="refresh-cw"></i><span>Sinc</span></div>
+            <div class="nav-item" onclick="switchTab('ranking-screen', this)"><i data-lucide="bar-chart-3"></i><span>Rank</span></div>
+            <div class="nav-item" onclick="switchTab('profile-screen', this)"><i data-lucide="user"></i><span>Perfil</span></div>
+        </div></nav>
+    </div>
+
+    <script>
+        /* --- AUTH SYSTEM --- */
+        let users = JSON.parse(localStorage.getItem('ut_users_db')) || [];
+        let currentUser = null;
+
+        function toggleAuth() {
+            document.getElementById('login-form').style.display = document.getElementById('login-form').style.display === 'none' ? 'block' : 'none';
+            document.getElementById('register-form').style.display = document.getElementById('register-form').style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function handleRegister() {
+            const regUser = document.getElementById("reg-user").value;
+            const regEmail = document.getElementById("reg-email").value;
+            const regPass = document.getElementById("reg-pass").value;
+            if (!regUser || !regEmail || !regPass) return showToast("PREENCHA TUDO!");
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(regEmail, regPass);
+                const firebaseUser = userCredential.user;
+                
+                // Check if user data already exists in Firestore (e.g., from a previous Google Sign-In)
+                const userDoc = await usersCollection.doc(firebaseUser.uid).get();
+                let newUser;
+
+                if (userDoc.exists) {
+                    newUser = userDoc.data();
+                    console.log("Usuário já existe no Firestore, usando dados existentes.", newUser);
+                    showToast("Conta já existe. Faça login.");
+                    loginUser(newUser);
+                    return;
+                } else {
+                    newUser = {
+                        id: firebaseUser.uid,
+                        username: regUser,
+                        email: regEmail,
+                        coins: 10000,
+                        gems: 0,
+                        club: [],
+                        wc: null,
+                        rivalOvr: 80,
+                        team: [] // Initialize team array
+                    };
+
+                    // TIME INICIAL 75 OVR
+                    for(let i=0; i<11; i++) {
+                        const pos = i===10?"GOL":(i<3?"ATA":(i<6?"MEI":"DEF"));
+                        newUser.club.push({ 
+                            id: "start"+i, id_inst: Date.now()+i, nome: "Starter "+i, ovr: 75, posicao: pos, 
+                            liga: "Starter League", raridade: "raro", valor: 2000, chance: 0.1, onMarket: false, expireMin: 0,
+                            atributos: {velocidade:75,finalizacao:75,passe:75,defesa:75,fisico:75,reflexo:75}
+                        });
+                        newUser.team[i] = newUser.club[i];
+                    }
+
+                    await usersCollection.doc(firebaseUser.uid).set(newUser);
+                    console.log("Usuário criado no Firebase e LocalStorage:", newUser);
+                    showToast("CONTA CRIADA COM SUCESSO!");
+                    loginUser(newUser);
+                }
+            } catch (error) {
+                console.error("Erro ao criar conta:", error.code, error.message);
+                if (error.code === 'auth/email-already-in-use') {
+                    showToast("Este e-mail já está em uso. Tente fazer login.");
+                } else if (error.code === 'auth/weak-password') {
+                    showToast("Senha muito fraca. Use pelo menos 6 caracteres.");
+                } else {
+                    showToast("ERRO ao criar conta: " + error.message);
+                }
+            }
+        }
+
+        async function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                const result = await auth.signInWithPopup(provider);
+                const firebaseUser = result.user;
+                console.log("Usuário logado com Google:", firebaseUser);
+
+                const userDoc = await usersCollection.doc(firebaseUser.uid).get();
+                let userData;
+
+                if (!userDoc.exists) {
+                    // New Google user, initialize data
+                    userData = {
+                        id: firebaseUser.uid,
+                        username: firebaseUser.displayName || firebaseUser.email.split('@')[0],
+                        email: firebaseUser.email,
+                        coins: 10000,
+                        gems: 0,
+                        club: [],
+                        wc: null,
+                        rivalOvr: 80,
+                        team: []
+                    };
+
+                    for(let i=0; i<11; i++) {
+                        const pos = i===10?"GOL":(i<3?"ATA":(i<6?"MEI":"DEF"));
+                        userData.club.push({ 
+                            id: "start"+i, id_inst: Date.now()+i, nome: "Starter "+i, ovr: 75, posicao: pos, 
+                            liga: "Starter League", raridade: "raro", valor: 2000, chance: 0.1, onMarket: false, expireMin: 0,
+                            atributos: {velocidade:75,finalizacao:75,passe:75,defesa:75,fisico:75,reflexo:75}
+                        });
+                        userData.team[i] = userData.club[i];
+                    }
+                    await usersCollection.doc(firebaseUser.uid).set(userData);
+                    console.log("Novo usuário Google criado no Firestore:", userData);
+                    showToast("Bem-vindo! Sua conta Google foi criada.");
+                } else {
+                    userData = userDoc.data();
+                    console.log("Usuário Google existente logado do Firestore:", userData);
+                    showToast("Login com Google realizado com sucesso!");
+                }
+                loginUser(userData);
+            } catch (error) {
+                console.error("Erro ao fazer login com Google:", error.code, error.message);
+                if (error.code === 'auth/popup-closed-by-user') {
+                    showToast("Login com Google cancelado.");
+                } else {
+                    showToast("ERRO no login com Google: " + error.message);
+                }
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, pass);
+                const firebaseUser = userCredential.user;
+                const userDoc = await usersCollection.doc(firebaseUser.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    console.log("Usuário logado do Firebase:", userData);
+                    loginUser(userData);
+                } else {
+                    showToast("Dados do usuário não encontrados no Firestore.");
+                    console.error("Dados do usuário não encontrados no Firestore para UID:", firebaseUser.uid);
+                }
+            } catch (error) {
+                console.error("Erro ao fazer login:", error.message);
+                showToast("ACESSO NEGADO: " + error.message);
+            }
+        }
+
+        async function loginUser(user) {
+            currentUser = user;
+            // Update local users array with the fetched user data
+            const existingUserIndex = users.findIndex(u => u.id === user.id);
+            if (existingUserIndex !== -1) {
+                users[existingUserIndex] = user;
+            } else {
+                users.push(user);
+            }
+            localStorage.setItem("ut_users_db", JSON.stringify(users));
+            localStorage.setItem("ut_current_user", JSON.stringify(currentUser));
+            document.getElementById("auth-screen").style.display = "none";
+            document.getElementById("game-ui").style.display = "block";
+            init();
+        }
+
+        function handleLogout() { localStorage.removeItem('ut_current_user'); location.reload(); }
+
+        /* --- DATABASE MASTER (FROM V4) --- */
+        let PLAYERS_DB = [];
+        const WC_TEAMS = [{ id: 'BRA', name: 'Brasil', flag: '🇧🇷', ovr: 88 }, { id: 'ARG', name: 'Argentina', flag: '🇦🇷', ovr: 87 }, { id: 'FRA', name: 'França', flag: '🇫🇷', ovr: 89 }, { id: 'GER', name: 'Alemanha', flag: '🇩🇪', ovr: 86 }];
+        
+
+
+        async function save() { 
+            const idx = users.findIndex(u => u.id === currentUser.id);
+            if (idx !== -1) {
+                users[idx] = currentUser;
+            }
+            localStorage.setItem("ut_users_db", JSON.stringify(users));
+            localStorage.setItem("ut_current_user", JSON.stringify(currentUser));
+            localStorage.setItem("ut_master_db_v4", JSON.stringify(PLAYERS_DB)); 
+
+            // Save to Firebase
+            if (currentUser && currentUser.id) {
+                try {
+                    await usersCollection.doc(currentUser.id).set(currentUser);
+                    console.log("Dados do usuário atualizados no Firebase.", currentUser);
+                } catch (error) {
+                    console.error("Erro ao salvar dados do usuário no Firebase:", error.message);
+                }
+            }
+        }
+
+        // syncData function is now redundant for PLAYERS_DB as it's loaded from Firebase.
+        // Keeping it for potential future use or if other data types need local sync.
+        function syncData() {
+            try { 
+                const code = document.getElementById("sync-code-input").value; 
+                const decoded = JSON.parse(decodeURIComponent(escape(atob(code)))); 
+                // Assuming this sync is for players, which are now managed by Firebase.
+                // If this is for other data, adjust accordingly.
+                // PLAYERS_DB = decoded; 
+                // save(); // This save would update Firebase, but we need to ensure the structure is correct.
+                showToast("Sincronização de dados locais não suportada para jogadores. Use o Admin Panel."); 
+                // setTimeout(() => location.reload(), 1000); 
+            } catch (e) { showToast("CÓDIGO INVÁLIDO!"); }
+        }
+
+        function updateUI() {
+            if (!currentUser) return;
+            document.getElementById('coins-val').innerText = currentUser.coins.toLocaleString(); 
+            document.getElementById('gems-val').innerText = currentUser.gems.toLocaleString();
+            document.getElementById('club-count').innerText = `Você possui ${currentUser.club.length} jogadores`;
+            document.getElementById('prof-user').innerText = currentUser.username.toUpperCase();
+            document.getElementById('prof-email').innerText = currentUser.email;
+            renderClub(); renderTeam(); calculateOvr(); updateMarket();
+            if (currentUser.wc) { document.getElementById('wc-intro').style.display = 'none'; document.getElementById('wc-hub').style.display = 'block'; renderWCHub(); }
+            else { document.getElementById('wc-intro').style.display = 'block'; document.getElementById('wc-hub').style.display = 'none'; }
+            lucide.createIcons();
+        }
+
+        function updateMarket() {
+            const now = Date.now();
+            const available = PLAYERS_DB.filter(p => {
+                if (!p.onMarket) return false;
+                if (p.expireMin === 0) return true;
+                const expireAt = p.marketAddedAt + (p.expireMin * 60000);
+                return now < expireAt;
+            });
+            const list = document.getElementById('market-list');
+            if (!list) return;
+            list.innerHTML = available.map(p => {
+                let timeLeft = "";
+                if (p.expireMin > 0) {
+                    const diff = Math.floor((p.marketAddedAt + (p.expireMin * 60000) - now) / 1000);
+                    if(diff <= 0) return "";
+                    const min = Math.floor(diff/60); const sec = diff%60;
+                    timeLeft = `<span style="color:var(--danger); font-size:0.5rem;">EXPIRA: ${min}:${sec < 10 ? '0'+sec : sec}</span>`;
+                }
+                return `<div class="card-ui" style="display:flex; align-items:center; gap:15px;"><div class="card-player" style="width:40px; height:55px; padding:2px;"><div class="card-rating" style="font-size:0.5rem;">${p.ovr}</div></div><div style="flex:1;"><div style="font-weight:800; font-size:0.7rem;">${p.nome}</div><div style="font-size:0.6rem; color:var(--gold);">${p.valor.toLocaleString()} COINS</div>${timeLeft}</div><button class="btn btn-primary" style="width:70px; padding:8px;" onclick="buyDirect('${p.id}', ${p.valor})">BUY</button></div>`;
+            }).join('');
+            if (available.length === 0) list.innerHTML = `<div class="card-ui" style="text-align:center; opacity:0.5;">MERCADO VAZIO NO MOMENTO</div>`;
+            lucide.createIcons();
+        }
+
+        function switchTab(id, el) { document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); el.classList.add('active'); document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+        
+        function createCardHTML(p, large = false, mini = false) {
+            const raridadeClass = `card-${p.raridade}`; const size = mini ? 'width: 50px; height: 70px; padding: 4px; border-width: 1px;' : (large ? 'width: 180px; height: 250px;' : '');
+            return `<div class="card-player ${raridadeClass}" style="${size}" onclick="showDetails('${p.id_inst || p.id}')"><div class="card-rating" style="${mini ? 'font-size: 0.7rem; top: 4px; left: 4px;' : (large ? 'font-size: 2.5rem;' : '')}">${p.ovr}</div><div class="card-pos" style="${mini ? 'display:none' : (large ? 'top: 60px; font-size: 1rem;' : '')}">${p.posicao}</div><div class="card-img" style="${mini ? 'width: 30px; height: 30px; margin-top: 15px;' : (large ? 'width: 120px; height: 120px; margin-top: 30px;' : '')}"><i data-lucide="user"></i></div><div class="card-name" style="${mini ? 'font-size: 0.4rem; margin-top: 5px;' : (large ? 'font-size: 1.1rem; margin-top: 20px;' : '')}">${p.nome}</div></div>`;
+        }
+
+        function renderClub() { document.getElementById('club-grid').innerHTML = currentUser.club.map(p => createCardHTML(p)).join(''); lucide.createIcons(); }
+        
+        function showDetails(id_inst) {
+            const p = currentUser.club.find(p => p.id_inst == id_inst) || PLAYERS_DB.find(p => p.id == id_inst);
+            if(!p) return;
+            document.getElementById('modal-card-container').innerHTML = createCardHTML(p); document.getElementById('modal-player-name').innerText = p.nome;
+            document.getElementById('modal-player-pos').innerText = p.posicao; document.getElementById('modal-player-liga').innerText = p.liga;
+            document.getElementById('modal-player-val').innerText = `VALOR: ${p.valor.toLocaleString()}`;
+            let statsHTML = ''; for (let [key, val] of Object.entries(p.atributos)) { statsHTML += `<div class="stat-row" style="margin-bottom:8px;"><div style="display:flex; justify-content:space-between; font-size:0.6rem; font-weight:800; margin-bottom:3px; color:var(--text-dim);"><span>${key.toUpperCase()}</span><span>${val}</span></div><div style="height:5px; background:var(--bg-accent); border-radius:3px; overflow:hidden;"><div style="height:100%; background:var(--primary); width:${val}%"></div></div></div>`; }
+            document.getElementById('modal-stats-container').innerHTML = statsHTML; 
+            const sellBtn = document.getElementById('modal-sell-btn');
+            if(currentUser.club.some(cp => cp.id_inst == id_inst)) { sellBtn.style.display = 'block'; sellBtn.onclick = () => sellPlayer(id_inst); } 
+            else { sellBtn.style.display = 'none'; }
+            document.getElementById('modal-overlay').style.display = 'block'; document.getElementById('player-details-modal').classList.add('active'); lucide.createIcons();
+        }
+
+        function sellPlayer(id_inst) { 
+            const idx = currentUser.club.findIndex(p => p.id_inst == id_inst); 
+            if (idx === -1) return; 
+            const p = currentUser.club[idx]; 
+            const sellVal = Math.floor(p.valor * 0.5); 
+            if (confirm(`Vender por ${sellVal}?`)) { 
+                if (currentUser.team.some(tp => tp && tp.id_inst == id_inst)) { 
+                    currentUser.team[currentUser.team.findIndex(tp => tp && tp.id_inst == id_inst)] = null; 
+                } 
+                currentUser.coins += sellVal; 
+                currentUser.club.splice(idx, 1); 
+                save(); updateUI(); closeAllModals(); 
+            } 
+        }
+
+        function renderTeam() { const slots = document.querySelectorAll('.slot'); currentUser.team.forEach((p, i) => { if (p) { slots[i].classList.add('filled'); slots[i].innerHTML = createCardHTML(p, false, true); } else { slots[i].classList.remove('filled'); slots[i].innerHTML = `<span>${slots[i].dataset.pos}</span>`; } }); lucide.createIcons(); }
+        
+        function openSelector(index) { 
+            currentUser.currentSlot = index; 
+            const slotPos = document.querySelectorAll('.slot')[index].dataset.pos; 
+            const available = currentUser.club.filter(p => p.posicao === slotPos); 
+            document.getElementById('selector-grid').innerHTML = available.map(p => `<div onclick="equip('${p.id_inst}')">${createCardHTML(p)}</div>`).join(''); 
+            document.getElementById('modal-overlay').style.display = 'block'; document.getElementById('selector-modal').classList.add('active'); lucide.createIcons(); 
+        }
+
+        function equip(id_inst) { 
+            const p = currentUser.club.find(p => p.id_inst == id_inst); 
+            if (currentUser.team.some(tp => tp && tp.nome === p.nome)) { showToast("JOGADOR JÁ ESCALADO!"); return; } 
+            currentUser.team[currentUser.currentSlot] = p; 
+            save(); updateUI(); closeAllModals(); 
+        }
+
+        function calculateOvr() { const equipped = currentUser.team.filter(p => p !== null); const ovr = equipped.length > 0 ? Math.round(equipped.reduce((a, b) => a + b.ovr, 0) / equipped.length) : 0; document.getElementById('team-ovr-val').innerText = ovr; }
+        
+        function buyPack(type, price) {
+            if (currentUser.coins < price) { showToast("MOEDAS INSUFICIENTES!"); return; } 
+            currentUser.coins -= price; updateUI();
+            const overlay = document.getElementById('pack-reveal-overlay'); overlay.style.display = 'flex'; 
+            document.getElementById('revealed-player-container').style.display = 'none'; 
+            document.getElementById('collect-btn').style.display = 'none'; 
+            document.getElementById('dupe-msg').style.display = 'none';
+            setTimeout(() => { 
+                document.getElementById('global-flash').classList.add('active'); 
+                setTimeout(() => { 
+                    document.getElementById('global-flash').classList.remove('active'); 
+                    const totalChance = PLAYERS_DB.reduce((a, b) => a + b.chance, 0);
+                    let rand = Math.random() * totalChance;
+                    let selected = PLAYERS_DB[0];
+                    for(let p of PLAYERS_DB) { if(rand < p.chance) { selected = p; break; } rand -= p.chance; }
+                    const isDupe = currentUser.club.some(p => p.id === selected.id); 
+                    if (isDupe) { 
+                        const refund = Math.floor(selected.valor * 0.5); 
+                        currentUser.coins += refund; 
+                        document.getElementById('dupe-msg').innerText = `REPETIDO! +${refund} COINS`; 
+                        document.getElementById('dupe-msg').style.display = 'block'; 
+                    } else { 
+                        currentUser.club.push({ ...selected, id_inst: Date.now() }); 
+                    } 
+                    save(); 
+                    const cont = document.getElementById('revealed-player-container'); 
+                    cont.innerHTML = createCardHTML(selected, true); 
+                    cont.style.display = 'block'; 
+                    setTimeout(() => { cont.style.transform = 'scale(1.2)'; document.getElementById('collect-btn').style.display = 'flex'; }, 50); 
+                    lucide.createIcons(); 
+                }, 400); 
+            }, 1500);
+        }
+
+        function closePackReveal() { document.getElementById('pack-reveal-overlay').style.display = 'none'; updateUI(); }
+        
+        function setRival(ovr, el) { currentUser.rivalOvr = ovr; document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
+        
+        function startMatch() { 
+            const overlay = document.getElementById('match-overlay'); overlay.style.display = 'flex'; 
+            document.getElementById('match-result-ui').style.display = 'none'; 
+            setTimeout(() => { 
+                const teamOvr = parseInt(document.getElementById('team-ovr-val').innerText); 
+                const diff = teamOvr - currentUser.rivalOvr; 
+                const winProb = 0.5 + (diff * 0.05); 
+                const rand = Math.random(); 
+                let res, s1, s2, reward; 
+                if (rand < winProb) { res = 'VITÓRIA!'; s1 = Math.floor(Math.random()*3)+1; s2 = Math.floor(Math.random()*s1); reward = 2500; } 
+                else { res = 'DERROTA'; s2 = Math.floor(Math.random()*3)+1; s1 = Math.floor(Math.random()*s2); reward = 500; } 
+                document.getElementById('res-status').innerText = res; 
+                document.getElementById('res-score').innerText = `${s1} - ${s2}`; 
+                document.getElementById('res-rewards').innerHTML = `<div class="currency-pill">+${reward} <i data-lucide="coins"></i></div>`;
+                currentUser.coins += reward; save();
+                document.getElementById('match-result-ui').style.display = 'block'; lucide.createIcons();
+            }, 2000);
+        }
+
+        function closeMatchOverlay() { document.getElementById('match-overlay').style.display = 'none'; updateUI(); }
+
+        /* --- WORLD CUP LOGIC (FROM V4) --- */
+        function renderTeamsSelection() {
+            const grid = document.getElementById('teams-grid');
+            grid.innerHTML = WC_TEAMS.map(t => `<div class="card-ui wc-team-card" id="wc-team-${t.id}" onclick="selectWCTeam('${t.id}')"><div style="font-size:2rem; margin-bottom:10px;">${t.flag}</div><div style="font-weight:900; font-size:0.7rem;">${t.name.toUpperCase()}</div><div style="font-size:0.6rem; opacity:0.6;">OVR: ${t.ovr}</div></div>`).join('');
+        }
+        function selectWCTeam(id) {
+            document.querySelectorAll('.wc-team-card').forEach(c => c.style.borderColor = 'var(--bg-accent)');
+            document.getElementById('wc-team-'+id).style.borderColor = 'var(--primary)';
+            currentUser.selectedWCTeam = WC_TEAMS.find(t => t.id === id);
+            document.getElementById('start-wc-btn').style.display = 'block';
+        }
+        function confirmSelection() {
+            currentUser.wc = { team: currentUser.selectedWCTeam, phase: 'GRUPO', gamesPlayed: 0, points: 0, table: WC_TEAMS.map(t => ({...t, p: 0})) };
+            save(); updateUI();
+        }
+        function renderWCHub() {
+            document.getElementById('my-team-display').innerHTML = `<span style="font-size:1.5rem;">${currentUser.wc.team.flag}</span> <span style="font-weight:900; font-size:0.8rem;">${currentUser.wc.team.name.toUpperCase()}</span>`;
+            document.getElementById('current-phase-label').innerText = currentUser.wc.phase;
+            const sortedTable = [...currentUser.wc.table].sort((a,b) => b.p - a.p);
+            document.getElementById('group-table-body').innerHTML = sortedTable.map(t => `<tr class="${t.id === currentUser.wc.team.id ? 'highlight' : ''}"><td>${t.flag} ${t.name}</td><td>${t.p}</td></tr>`).join('');
+        }
+        function playWCGame() {
+            const overlay = document.getElementById('match-overlay'); overlay.style.display = 'flex';
+            setTimeout(() => {
+                const rival = WC_TEAMS.filter(t => t.id !== currentUser.wc.team.id)[Math.floor(Math.random()*3)];
+                const diff = currentUser.wc.team.ovr - rival.ovr;
+                const winProb = 0.5 + (diff * 0.05);
+                const rand = Math.random();
+                let res, s1, s2, points = 0;
+                if (rand < winProb) { res = 'VITÓRIA!'; s1 = Math.floor(Math.random()*3)+1; s2 = Math.floor(Math.random()*s1); points = 3; }
+                else if (rand < winProb + 0.2) { res = 'EMPATE'; s1 = Math.floor(Math.random()*2); s2 = s1; points = 1; }
+                else { res = 'DERROTA'; s2 = Math.floor(Math.random()*3)+1; s1 = Math.floor(Math.random()*s2); points = 0; }
+                
+                currentUser.wc.points += points;
+                currentUser.wc.table.find(t => t.id === currentUser.wc.team.id).p += points;
+                // Simulate others
+                currentUser.wc.table.forEach(t => { if(t.id !== currentUser.wc.team.id) t.p += Math.random() > 0.5 ? 3 : 1; });
+                currentUser.wc.gamesPlayed++;
+                
+                if(currentUser.wc.gamesPlayed >= 3) {
+                    const sorted = [...currentUser.wc.table].sort((a,b) => b.p - a.p);
+                    if(sorted[0].id === currentUser.wc.team.id || sorted[1].id === currentUser.wc.team.id) {
+                        showToast("CLASSIFICADO!"); currentUser.wc.phase = 'FINAL'; currentUser.wc.gamesPlayed = 0;
+                    } else {
+                        showToast("ELIMINADO!"); resetWC();
+                    }
+                }
+                
+                document.getElementById('res-status').innerText = res;
+                document.getElementById('res-score').innerText = `${s1} - ${s2}`;
+                document.getElementById('res-rewards').innerHTML = `<div class="currency-pill">+500 <i data-lucide="coins"></i></div><div class="currency-pill">+5 <i data-lucide="gem" style="color:#00f2ff"></i></div>`;
+                currentUser.coins += 500; currentUser.gems += 5;
+                save(); document.getElementById('match-result-ui').style.display = 'block'; lucide.createIcons();
+            }, 2000);
+        }
+        function resetWC() { currentUser.wc = null; save(); updateUI(); }
+
+        function buyDirect(id, price) {
+            if (currentUser.coins < price) { showToast("MOEDAS INSUFICIENTES!"); return; }
+            const p = PLAYERS_DB.find(p => p.id === id);
+            if (currentUser.club.some(cp => cp.id === p.id)) { showToast("VOCÊ JÁ POSSUI ESTE JOGADOR!"); return; }
+            currentUser.coins -= price;
+            currentUser.club.push({ ...p, id_inst: Date.now() });
+            save(); updateUI(); showToast("COMPRADO COM SUCESSO!");
+        }
+
+        function closeAllModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); document.getElementById('modal-overlay').style.display = 'none'; }
+        function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000); }
+
+        // AUTO-LOGIN with Firebase
+        auth.onAuthStateChanged(async (firebaseUser) => {
+            if (firebaseUser) {
+                console.log("Firebase: Usuário autenticado.", firebaseUser.uid);
+                const userDoc = await usersCollection.doc(firebaseUser.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    console.log("Firebase: Dados do usuário carregados.", userData);
+                    loginUser(userData);
+                } else {
+                    console.error("Firebase: Dados do usuário não encontrados no Firestore para UID:", firebaseUser.uid);
+                    // If user exists in auth but not in firestore, log them out
+                    auth.signOut();
+                    localStorage.removeItem("ut_current_user");
+                    location.reload();
+                }
+            } else {
+                console.log("Firebase: Nenhum usuário autenticado.");
+                // If no Firebase user, check local storage for a previously logged in user
+                const savedAuth = localStorage.getItem("ut_current_user");
+                if (savedAuth) {
+                    const localUser = JSON.parse(savedAuth);
+                    // Attempt to sign in with local credentials if they exist and are valid
+                    try {
+                        await auth.signInWithEmailAndPassword(localUser.email, localUser.password); // This will trigger onAuthStateChanged again
+                    } catch (error) {
+                        console.warn("Firebase: Falha ao reautenticar usuário local.", error.message);
+                        localStorage.removeItem("ut_current_user");
+                        location.reload();
+                    }
+                } else {
+                    // No user, show auth screen
+                    document.getElementById("auth-screen").style.display = "flex";
+                }
+            }
+            lucide.createIcons();
+        });
+
+        // Initial setup for UI if no user is logged in (handled by onAuthStateChanged now)
+        // document.getElementById("auth-screen").style.display = "flex"; // This will be handled by onAuthStateChanged
+        // lucide.createIcons(); // This will be handled by onAuthStateChanged
+
+        // Original init function, called after successful login
+        async function init() {
+            PLAYERS_DB = [];
+            try {
+                const snapshot = await playersCollection.get();
+                snapshot.forEach(doc => {
+                    PLAYERS_DB.push(doc.data());
+                });
+                console.log("Firebase: PLAYERS_DB carregado.", PLAYERS_DB);
+            } catch (error) {
+                console.error("Firebase: Erro ao carregar PLAYERS_DB:", error.message);
+                // Fallback to local storage if Firebase fails
+                const customDB = localStorage.getItem("ut_master_db_v4"); 
+                if (customDB) { PLAYERS_DB = JSON.parse(customDB); }
+                else { 
+                    PLAYERS_DB = currentUser.club.map(p => ({...p, onMarket: false, expireMin: 0}));
+                }
+                console.warn("Firebase: Usando PLAYERS_DB do localStorage como fallback.");
+            }
+
+            renderTeamsSelection(); updateUI(); lucide.createIcons();
+            setInterval(updateMarket, 1000);
+            window.addEventListener("storage", async (e) => {
+                if(e.key === "ut_users_db" && currentUser) {
+                    const updatedUsers = JSON.parse(e.newValue);
+                    const myNewData = updatedUsers.find(u => u.id === currentUser.id);
+                    if(myNewData) {
+                        currentUser = myNewData;
+                        localStorage.setItem("ut_current_user", JSON.stringify(currentUser));
+                        updateUI();
+                        await usersCollection.doc(currentUser.id).set(currentUser);
+                        console.log("Firebase: Dados do usuário atualizados via evento de storage.", currentUser);
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
